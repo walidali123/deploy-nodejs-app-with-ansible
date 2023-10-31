@@ -2,7 +2,10 @@
 - name: Install Node.js and npm, Deploy Node.js App
   hosts: web1
   become: yes  # Ensure you have privilege escalation, e.g., sudo
-
+  vars: 
+    - location: /home/thor/simple-nodejs
+    - version: 1.0.0
+    - destination: /home/walid
   tasks:
     - name: Update APT repositories and cache
       yum:
@@ -37,15 +40,15 @@
   tasks:
     - name: Unpack the Node.js tar file
       unarchive:
-        src: /home/thor/simple-nodejs/nodejs-app-1.0.0.tgz
-        dest: /home/walid
+        src: "{{location}}/nodejs-app-{{version}}.tgz"
+        dest: "{{destination}}"
        
     - name: install dependencies 
       npm:
-        path: /home/walid/package
+        path: "{{destination}}/package"
     - name: start the application
       command: 
-        chdir: /root/package/app
+        chdir: "{{destination}}/package/app"
         cmd: node server
       async: 1000
       poll: 0  
